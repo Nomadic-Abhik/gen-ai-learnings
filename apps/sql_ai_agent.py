@@ -33,22 +33,27 @@ tools = toolkit.get_tools()
 st.subheader("SQL AI Agent")
 if "conversation_history" not in st.session_state:
     st.session_state.conversation_history = []
+
 for message in st.session_state.conversation_history:
     role = message["role"]
     content = message["content"]
     st.chat_message(role).markdown(content)
-agent = create_agent(
-    model = openai_llm,
-    tools = tools,
-    checkpointer = InMemorySaver(),
-    system_prompt = system_prompt
-)
+
+@st.cache_resource
+def get_agent():
+    return create_agent(
+        model = openai_llm,
+        tools = tools,
+        checkpointer = InMemorySaver(),
+        system_prompt = system_prompt
+    )
 
 query = st.chat_input("Ask Me Anything About Your Tasks")
 if query:
     st.chat_message("user").markdown(query)
     st.session_state.conversation_history.append({"role": "user", "content": query})
-    result= agent.invoke(
+
+    result= get_agent().invoke(
         {"messages": [{"role": "user", "content": query}]},
          {"configurable":{"thread_id":"1"}}
     )
