@@ -52,12 +52,13 @@ query = st.chat_input("Ask Me Anything About Your Tasks")
 if query:
     st.chat_message("user").markdown(query)
     st.session_state.conversation_history.append({"role": "user", "content": query})
-
-    result= get_agent().invoke(
-        {"messages": [{"role": "user", "content": query}]},
-         {"configurable":{"thread_id":"1"}}
-    )
-    st.chat_message("assistant").markdown(result["messages"][-1].content)
-    st.session_state.conversation_history.append({"role": "assistant", "content": result["messages"][-1].content})
+    with st.chat_message("assistant"):
+        with st.spinner("Generating response..."):
+            result= get_agent().invoke(
+                {"messages": [{"role": "user", "content": query}]},
+                {"configurable":{"thread_id":"1"}}
+            )
+            st.markdown(result["messages"][-1].content)
+            st.session_state.conversation_history.append({"role": "assistant", "content": result["messages"][-1].content})
 
 
