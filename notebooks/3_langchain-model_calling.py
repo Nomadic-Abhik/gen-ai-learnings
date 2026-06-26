@@ -40,7 +40,7 @@ print(ollama_response.content)
 ### Using ChatGroq
 
 groq_llm = ChatGroq(model = "openai/gpt-oss-20b")
-groq_response = groq_llm.invoke("Who Won IPL 2013?")
+groq_response = groq_llm.invoke("what is RAG ?")
 print(groq_response.content)
 
 
