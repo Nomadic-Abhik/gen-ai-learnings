@@ -1,0 +1,45 @@
+ public static int findmaxvalueIndex(int[] myarray )
+	{
+		int maxValue = myarray.Max();
+		Console.WriteLine(maxValue);
+		return Array.IndexOf(myarray, maxValue);
+	}
+    public static string ReveserString(string ipArray)
+    {
+		StringBuilder sb= new StringBuilder();
+        /*char[] myArray = ipArray.ToCharArray();
+        Array.Reverse(myArray );
+        string reverseString = string.Join("",myArray);
+        return reverseString;*/
+		for (int i = ipArray.Length-1; i>=0;i--)
+		{
+			sb.Append(ipArray[i]);
+		}
+		return sb.ToString();
+    } 
+----------------
+string myString ="Website";		
+			Dictionary<char, int> numberNames = new Dictionary<char, int>();
+			
+			while(myString.Length > 0)
+			{
+				int Cal=0;
+				Console.Write(myString[0]+"=");
+				for(int i= 0; i<myString.Length ;i++)
+				{
+					if(myString[0]==myString[i])
+						Cal++;
+				}
+				
+				if(Cal >1)
+				{
+					numberNames.Add(myString[0],Cal);
+				}
+				Console.WriteLine(Cal);
+				myString = myString.Replace(myString[0].ToString(),string.Empty);
+			}
+			foreach(var item in numberNames)
+			{
+				Console.WriteLine("{0},  {1}", item.Key, item.Value);
+			}
+			Console.ReadLine();
