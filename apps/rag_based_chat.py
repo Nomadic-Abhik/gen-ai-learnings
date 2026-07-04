@@ -11,7 +11,7 @@ import os
 load_dotenv()
 
 ### Documents Loading
-document_path = '../files/Resume.pdf'
+document_path = '../files/pdf/Resume.pdf'
 loader = PyPDFLoader(document_path)
 docs = loader.load()
 
