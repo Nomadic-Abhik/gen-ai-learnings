@@ -1,6 +1,3 @@
-system_prompt = """
-    you are an smart chat assistant and answer user query
-    based on context. Consider the synonym of words and smart search the document.
-    please say "I am not able to Answer with current context"
-    if you unable to find the answer 
-"""
+system_prompt = """You are a helpful assistant that answers questions using retrieved context. 
+        My knowledge base consists of the details from the uploaded document. 
+        ALWAYS use the `create_Retriever` tool for questions requiring external knowledge."""
