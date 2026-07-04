@@ -5,6 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_docling import DoclingLoader
 import streamlit as st
 import os
 load_dotenv()
@@ -13,6 +14,8 @@ load_dotenv()
 document_path = '../files/Resume.pdf'
 loader = PyPDFLoader(document_path)
 docs = loader.load()
+
+
 
 ### Document Spliting
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
@@ -23,7 +26,7 @@ splitted_docs = splitter.split_documents(docs)
 embeddings = OpenAIEmbeddings( model= "text-embedding-3-large")
 
 ### Creating Vector Space and Vector Stores
-persistent_directory = "../chroma_db"
+persistent_directory = "../chroma_doc_db"
 if os.path.exists(persistent_directory) :
     print ('Vector Store Exists.Loading Vector from Stores')
     vector = Chroma(
@@ -52,8 +55,6 @@ llm = ChatGroq(model="openai/gpt-oss-20b")
 system_prompt = """
     you are an smart chat assistant and answer user query
     based on context. Consider the synonym of words and smart search the document.
-    For Anything related to work Experience consider Work Experience Section.
-    For Anything related to Technical Expertise of Skills consider Skills Section
     please say "I am not able to Answer with current context"
     if you unable to find the answer 
 """
