@@ -23,10 +23,14 @@ path.mkdir(parents=True, exist_ok=True)
 
 
 ### Section Upload Section
+
 def Upload_pdf(path):
     try:
+        if "vector_store" not in st.session_state:
+            st.session_state.vector_store = None
         process_pdf(path)
         uploaded = st.session_state.get("vector_store")
+        print(f"Vector store after processing: {uploaded}")
         if uploaded is not None:
             return "Documents Uploaded"
         else:
@@ -42,23 +46,24 @@ def process_pdf(path):
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
     vector_store = st.session_state.get("vector_store")
+    print(f"Vector store before processing: {vector_store}")
     if vector_store is None:
         vector_store = InMemoryVectorStore.from_documents(
             documents=split_docs,
             embedding=embeddings
         )
+        print(f"Vector store created: {vector_store}")
+        st.session_state.vector_store = vector_store
     else:
         vector_store.add_documents(split_docs)
-
-    st.session_state.vector_store = vector_store
+        print(f"Vector store updated: {vector_store}")
     return vector_store
 
 if "conversation_history" not in st.session_state:
     st.session_state.conversation_history = []
 if "upload_file" not in st.session_state:
     st.session_state.upload_file = False
-if "vector_store" not in st.session_state:
-    st.session_state.vector_store = None
+
 for msg in st.session_state.conversation_history:
     role = msg["role"]
     content = msg ["content"]
@@ -77,31 +82,33 @@ if not st.session_state.upload_file:
             if upload_status == "Documents Uploaded":
                 st.session_state.upload_file = True
                 st.chat_message("ai").markdown("Documents Uploaded")
+                print(f"Vector store after upload: {st.session_state.get("vector_store")}") 
                 st.rerun()
-
-
 
 ### Section Response
 llm = ChatGroq(model = "openai/gpt-oss-20b")
 @tool
 def create_Retriever(query: str):
     """Retrieve documents relevant to a query from the knowledge base."""
-    vector_store = st.session_state.vector_store
+    vector_store = st.session_state.get("vector_store")
+    print(f"Vector store in create_Retriever: {vector_store}")
     if vector_store is None:
         vector_store = process_pdf(path)
+        print(f"Vector store created in create_Retriever: {vector_store}")
+    print(f"Vector store already exists in create_Retriever: {vector_store}")
     docs = vector_store.similarity_search(query)
     context = ""
     for doc in docs:
-        context += context + doc.page_content + "/n"
+        context +=  doc.page_content + "/n"
     return context
 
 @st.cache_resource
 def get_agent():
     agent = create_agent(
-        llm=llm,
+        model=llm,
         system_prompt=system_prompt,
-        checkpoint=InMemorySaver(),
-        tool=[create_Retriever],
+        checkpointer=InMemorySaver(),
+        tools=[create_Retriever],
     )
     return agent
 
@@ -112,7 +119,6 @@ if st.session_state.upload_file:
         if query.lower() == "clear":
             st.session_state.conversation_history = []
             st.session_state.upload_file = False
-            st.session_state.vector_store = None
             st.rerun()
         st.session_state.conversation_history.append({"role":"user","content": query})
         response = get_agent().invoke(
