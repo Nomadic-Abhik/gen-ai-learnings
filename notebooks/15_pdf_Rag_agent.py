@@ -25,7 +25,7 @@ embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 vectorstore = Chroma.from_documents(
     documents=splitted_docs,
     embedding=embeddings,
-    persist_directory="../chroma_db"
+    persist_directory="../db/chroma_db"
 )
 
 # Crating a function to get context from vectorstore based on user query

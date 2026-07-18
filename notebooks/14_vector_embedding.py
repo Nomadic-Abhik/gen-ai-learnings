@@ -27,7 +27,7 @@ len(embedded_docs)
 vector_store = Chroma.from_documents(
     documents=splitted_docs, 
     embedding=embeddings,
-    persist_directory="../chroma_db")
+    persist_directory="../db/chroma_db")
 
 user_query = "Who is Prime Minister of India?"
 # K is optional and it provides the number of similar documents to return. Default is 4.

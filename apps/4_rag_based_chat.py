@@ -26,7 +26,7 @@ splitted_docs = splitter.split_documents(docs)
 embeddings = OpenAIEmbeddings( model= "text-embedding-3-large")
 
 ### Creating Vector Space and Vector Stores
-persistent_directory = "../chroma_doc_db"
+persistent_directory = "../db/chroma_doc_db"
 if os.path.exists(persistent_directory) :
     print ('Vector Store Exists.Loading Vector from Stores')
     vector = Chroma(
